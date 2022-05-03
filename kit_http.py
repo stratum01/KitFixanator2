@@ -38,6 +38,7 @@ def grab_the_locations(s, payload):
          })
     emptyListDF = kitdf[kitdf["BatchNum"]==""]
     empty_loc_list = emptyListDF["Location"].tolist()
+    kitdf=kitdf.set_index('Location')
     # print(empty_loc_list)
     return kitdf, empty_loc_list, kitlocbowl
 
@@ -177,34 +178,33 @@ def index():
     # locations_html = kitlocbowl.prettify()
     del kitdf['Loc_ID']
     locations_html = kitdf.to_html()
-    head_html = '<HEAD><title>KitFixinator</title><meta name="viewport" content="width=device-width, initial-scale=1"> \
-<style> \
-#content, html, body { \
-    height: 98%; \
-} \
-#left { \
-    float: left; \
-    width: 70%; \
-    background: silver; \
-    height: 100%; \
-    overflow: scroll; \
-} \
-#right { \
-    float: left; \
-    width: 30%; \
-    background: silver; \
-    height: 100%; \
-    overflow: scroll; \
-} \
-\
-</style></HEAD><body><h2>wine kit relocator</h2> '
-    top_div = '<div class="row" id="content">' \
-              '<div class="column" id="left">'
-    form_stuff = '</div><div class="column" id="right"><form action="/process" method="post">' \
-                 '<textarea rows="20" cols="15" name="incoming_batch_moves">12345:A-1' \
-                 '</textarea>'\
-                 '<input type="submit">' \
-                '</form></div>'
+    head_html = '''<HEAD><title>KitFixinator</title><meta name="viewport" content="width=device-width, initial-scale=1"> 
+<style> 
+#content, html, body { 
+    height: 98%; 
+} 
+#left { 
+    float: left; 
+    width: 70%; 
+    background: silver; 
+    height: 100%; 
+    overflow: scroll; 
+} 
+#right { 
+    float: left; 
+    width: 30%; 
+    background: silver; 
+    height: 100%; 
+    overflow: scroll; 
+} 
+
+</style></HEAD><body><h2>wine kit relocator</h2> '''
+    top_div = '''<div class="row" id="content"> 
+              <div class="column" id="left">'''
+    form_stuff = '''</div><div class="column" id="right"><form action="/process" method="post">
+                 <textarea rows="20" cols="15" name="incoming_batch_moves">12345:A-1 </textarea>
+                 <input type="submit">
+                </form></div>'''
     merged_html = head_html + top_div + locations_html + form_stuff
     return merged_html
 
