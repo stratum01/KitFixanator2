@@ -38,7 +38,7 @@ def grab_the_locations(s, payload):
          })
     emptyListDF = kitdf[kitdf["BatchNum"]==""]
     empty_loc_list = emptyListDF["Location"].tolist()
-    kitdf=kitdf.set_index('Location')
+    kitdf.set_index('Location')
     # print(empty_loc_list)
     return kitdf, empty_loc_list, kitlocbowl
 
@@ -70,18 +70,18 @@ def get_batches_to_move(batch_moves, kits, emptys):
                 continue
             this_batch = this_batch.upper()
             # print("line:", this_batch)
-            matches = re.match(r'(\d{5}):([A-Z]-\d{1,3})', this_batch)
+            matches = re.match(r'([A-Z]-\d{1,3}):(\d{5})', this_batch)
             print("checking ", this_batch)
             if matches:
-                if valid_batch(matches.group(1),kits):
-                    print("...valid batch",matches.group(1))
-                    if validate_location(matches.group(2), kits):
-                        print("....valid location", matches.group(2))
+                if valid_batch(matches.group(2),kits):
+                    print("...valid batch",matches.group(2))
+                    if validate_location(matches.group(1), kits):
+                        print("....valid location", matches.group(1))
                         print("adding to list")
-                        batch_from_file.append(matches.group(1))
-                        loc_from_file.append(matches.group(2))
+                        batch_from_file.append(matches.group(2))
+                        loc_from_file.append(matches.group(1))
                 else:
-                    print("batch number " + matches.group(1) + " does not exist at this store")
+                    print("batch number " + matches.group(2) + " does not exist at this store")
                 # print(batch_from_file, loc_from_file)
             else:
                 print(this_batch, "didn't match a batch location combo .... get that garbage outta here")
@@ -202,7 +202,7 @@ def index():
     top_div = '''<div class="row" id="content"> 
               <div class="column" id="left">'''
     form_stuff = '''</div><div class="column" id="right"><form action="/process" method="post">
-                 <textarea rows="20" cols="15" name="incoming_batch_moves">12345:A-1 </textarea>
+                 <textarea rows="20" cols="15" name="incoming_batch_moves">A-1:12345 </textarea>
                  <input type="submit">
                 </form></div>'''
     merged_html = head_html + top_div + locations_html + form_stuff
