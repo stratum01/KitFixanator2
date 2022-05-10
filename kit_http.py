@@ -2,7 +2,7 @@ import requests
 import pandas as pd
 import re
 from bs4 import BeautifulSoup
-from flask import Flask, request
+from flask import Flask, request, redirect
 import os
 from flask import send_from_directory
 
@@ -109,7 +109,7 @@ def move_batch_to_location(batch_num_to_move, location_result, s, payload, kitdf
         if "CUSTOMER_KIT_POS_TRANSACTION_ID" in pos:
             customer_pos_grp = re.match(r'.*VALUE="([A-Z]{3}\d{4,7})".*', pos)
             if customer_pos_grp:
-                print("result for pos " + customer_pos_grp[1])
+                # print("result for pos " + customer_pos_grp[1])
                 customer_pos = customer_pos_grp[1]
             else:
                 customer_pos = ''
@@ -157,7 +157,7 @@ def move_batch_to_location(batch_num_to_move, location_result, s, payload, kitdf
                     'commit': 'Update Batch',
                     })
     print("moving " + batch_num_to_move)
-    print(payload)
+    # print(payload)
     # post the changes
     batch_page_post_url = "https://winery.mywinesense.com/batches/" + batch_num_to_move
     response = s.post(batch_page_post_url, data=payload)
@@ -177,7 +177,7 @@ def index():
     kitdf, empty_loc_list, kitlocbowl = grab_the_locations(s, payload)
     # locations_html = kitlocbowl.prettify()
     del kitdf['Loc_ID']
-    locations_html = kitdf.to_html()
+    locations_html = kitdf.to_html(classes="df")
     head_html = '''<HEAD><title>KitFixinator</title><meta name="viewport" content="width=device-width, initial-scale=1"> 
 <style> 
 #content, html, body { 
@@ -196,7 +196,9 @@ def index():
     background: silver; 
     height: 100%; 
     overflow: scroll; 
-} 
+}
+ 
+.df tbody tr:nth-child(even) { background-color: lightblue; }
 
 </style></HEAD><body><h2>wine kit relocator</h2> '''
     top_div = '''<div class="row" id="content"> 
@@ -261,7 +263,7 @@ def process():
                 if "CUSTOMER_KIT_POS_TRANSACTION_ID" in pos:
                     customer_pos_grp = re.match(r'.*VALUE="([A-Z]{3}\d{4,7})".*', pos)
                     if customer_pos_grp:
-                        print("result for pos " + customer_pos_grp[1])
+                        # print("result for pos " + customer_pos_grp[1])
                         customer_pos = customer_pos_grp[1]
                     else:
                         customer_pos = ''
@@ -308,7 +310,7 @@ def process():
                             '_method': 'patch',
                             'commit': 'Update Batch',
                             })
-            print("moving " + str(batch_from_file[batches_to_move_counter]))
+            print("Moving " + str(batch_from_file[batches_to_move_counter]) + " to " + kit_to_move_loc)
             # print(payload)
             # post the changes
             batch_page_post_url = "https://winery.mywinesense.com/batches/" + str(
@@ -327,4 +329,4 @@ def process():
     for x in range(len(leftover_batches)):
         print(leftover_batches[x] + ":" + leftover_locations[x])
 
-    return 'done'
+    return redirect("http://192.168.50.132:9463", code=302)
